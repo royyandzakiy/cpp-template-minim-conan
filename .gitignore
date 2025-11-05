@@ -53,3 +53,11 @@ vcpkg_installed/
 build/
 __pycache__
 .pytest_cache
+
+# Conan
+conanbuildinfo.*
+conaninfo.txt
+conan.lock
+.conan/
+
+CMakeUserPresets.json
