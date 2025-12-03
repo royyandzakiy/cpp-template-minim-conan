@@ -11,7 +11,7 @@
 	"configurePresets": [
 		{
 			"name": "default",
-			"displayName": "default",
+			"displayName": "default (msvc)",
 			"description": "default configure using 'Visual Studio 17 2022' generator",
 			"generator": "Visual Studio 17 2022",
 			"cacheVariables": {
@@ -32,12 +32,14 @@
 	"buildPresets": [
 		{
 			"name": "release",
+			"displayName": "release (msvc)",
 			"configurePreset": "default",
 			"configuration": "Release",
 			"jobs": 20
 		},
 		{
 			"name": "debug",
+			"displayName": "debug (msvc)",
 			"configurePreset": "default",
 			"configuration": "Debug",
 			"jobs": 20
