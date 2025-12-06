@@ -1,3 +1,4 @@
 - fix setup-windows
+- hide all inside others folder: cmake, .mds
 - add docs generator
 - add gtest + pytest
