@@ -4,11 +4,11 @@ message(STATUS "Checking development environment...")
 # Check CMake version
 # if(CMAKE_VERSION VERSION_LESS 3.28)
     # message(WARNING "CMake ${CMAKE_VERSION} found, but 3.28+ is required")
-    execute_process(
-        COMMAND powershell -ExecutionPolicy Bypass -File "${CMAKE_SOURCE_DIR}/scripts/setup-windows.ps1"
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-        RESULT_VARIABLE setup_result
-    )
+execute_process(
+    COMMAND powershell -ExecutionPolicy Bypass -File "${CMAKE_SOURCE_DIR}/scripts/setup-windows.ps1"
+    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    RESULT_VARIABLE setup_result
+)
     # if(NOT setup_result EQUAL 0)
     #     message(FATAL_ERROR "Setup script failed with code: ${setup_result}")
     # endif()

@@ -7,18 +7,6 @@ Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "  Minimal Dev Setup for Conan Projects  " -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 
-# Check if running as admin (optional)
-function Test-Admin {
-	try {
-		$identity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
-		$principal = New-Object System.Security.Principal.WindowsPrincipal($identity)
-		return $principal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
-	}
- catch {
-		return $false
-	}
-}
-
 # Test if a tool is in PATH
 function Test-Tool {
 	param([string]$Tool)
@@ -92,11 +80,35 @@ function Install-Tool {
 Write-Host "`nChecking existing tools..." -ForegroundColor Yellow
 
 $tools = @{
-	"Git"    = if (Test-Tool "git") { & git --version 2>&1 | Select-String -Pattern "\d+\.\d+\.\d+" | ForEach-Object { $_.Matches.Value } } else { $null }
-	"CMake"  = if (Test-Tool "cmake") { & cmake --version 2>&1 | Select-String -Pattern "\d+\.\d+\.\d+" | ForEach-Object { $_.Matches.Value } } else { $null }
-	"Python" = if (Test-Tool "python") { & python --version 2>&1 | ForEach-Object { $_ -replace 'Python ', '' } } else { $null }
-	"Conan"  = if (Test-Tool "conan") { & conan --version 2>&1 } else { $null }
-	"Ninja"  = if (Test-Tool "ninja") { & ninja --version 2>&1 } else { $null }
+	"Git"    = if (Test-Tool "git") { 
+		$version = git --version 2>&1
+		$match = $version | Select-String -Pattern "\d+\.\d+\.\d+"
+		if ($match) { $match.Matches.Value } else { "unknown" }
+	}
+ else { $null }
+    
+	"CMake"  = if (Test-Tool "cmake") { 
+		$version = cmake --version 2>&1
+		$match = $version | Select-String -Pattern "\d+\.\d+\.\d+"
+		if ($match) { $match.Matches.Value } else { "unknown" }
+	}
+ else { $null }
+    
+	"Python" = if (Test-Tool "python") { 
+		$version = python --version 2>&1
+		$version -replace 'Python ', ''
+	}
+ else { $null }
+    
+	"Conan"  = if (Test-Tool "conan") { 
+		conan --version 2>&1 | Select-Object -First 1
+	}
+ else { $null }
+    
+	"Ninja"  = if (Test-Tool "ninja") { 
+		ninja --version 2>&1
+	}
+ else { $null }
 }
 
 foreach ($tool in $tools.Keys) {
@@ -178,8 +190,8 @@ if ($tools.Python -and (-not $tools.Conan)) {
 	Write-Host "`nInstalling Conan via pip..." -ForegroundColor Yellow
     
 	try {
-		& python -m pip install --upgrade pip
-		& python -m pip install conan
+		python -m pip install --upgrade pip
+		python -m pip install conan
         
 		if (Test-Tool "conan") {
 			Write-Host "  ✓ Conan installed" -ForegroundColor Green
@@ -219,75 +231,11 @@ if (-not $tools.Ninja) {
 }
 
 # ============================================================================
-# Setup Conan profiles
-# ============================================================================
-# if (Test-Tool "conan") {
-#     Write-Host "`nSetting up Conan profiles..." -ForegroundColor Yellow
-    
-#     try {
-#         # Create default profile
-#         & conan profile detect --force
-        
-#         # Create project profiles directory
-#         $profilesDir = "conan/profiles"
-#         if (-not (Test-Path $profilesDir)) {
-#             New-Item -ItemType Directory -Path $profilesDir -Force | Out-Null
-#         }
-        
-#         # Create debug profile
-# @"
-# include(default)
-
-# [settings]
-# build_type=Debug
-# compiler.runtime=MDd
-# "@ | Out-File -FilePath "$profilesDir/debug" -Encoding UTF8
-        
-#         # Create release profile
-# @"
-# include(default)
-
-# [settings]
-# build_type=Release
-# compiler.runtime=MD
-# "@ | Out-File -FilePath "$profilesDir/release" -Encoding UTF8
-        
-#         Write-Host "  ✓ Conan profiles created" -ForegroundColor Green
-#     } catch {
-#         Write-Host "  ✗ Conan setup failed: $_" -ForegroundColor Red
-#     }
-# }
-
-# ============================================================================
-# Install Conan dependencies
-# ============================================================================
-# if ((Test-Path "conanfile.txt" -or (Test-Path "conanfile.py")) -and (Test-Tool "conan")) {
-#     $response = Read-Host "`nInstall Conan dependencies? (Y/N)"
-#     if ($response -match "^[Yy]$") {
-#         Write-Host "`nInstalling dependencies..." -ForegroundColor Yellow
-        
-#         try {
-#             # Install for Debug
-#             Write-Host "  Debug build..." -ForegroundColor Gray
-#             & conan install . --build=missing --output-folder="build/Debug" --settings=build_type=Debug
-            
-#             # Install for Release
-#             Write-Host "  Release build..." -ForegroundColor Gray
-#             & conan install . --build=missing --output-folder="build/Release" --settings=build_type=Release
-            
-#             Write-Host "  ✓ Dependencies installed" -ForegroundColor Green
-#         } catch {
-#             Write-Host "  ✗ Dependency installation failed: $_" -ForegroundColor Red
-#         }
-#     }
-# }
-
-# ============================================================================
 # Final verification
 # ============================================================================
 Write-Host "`n" + ("=" * 40) -ForegroundColor Cyan
 Write-Host "SETUP COMPLETE" -ForegroundColor Cyan
-Write-Host "="*40 -ForegroundColor Cyan
+Write-Host "=" * 40 -ForegroundColor Cyan
 
 Write-Host "`nTools status:" -ForegroundColor Gray
 $allGood = $true
@@ -304,10 +252,6 @@ foreach ($tool in @("git", "cmake", "python", "conan", "ninja")) {
 
 if ($allGood) {
 	Write-Host "`nAll tools installed successfully!" -ForegroundColor Green
-	# Write-Host "`nBuild commands:" -ForegroundColor Gray
-	# Write-Host "  cmake --preset clang-debug" -ForegroundColor White
-	# Write-Host "  cmake --build build-clang" -ForegroundColor White
-	Write-Host "`nOr: .\scripts\build.ps1 --preset clang-debug" -ForegroundColor White
 }
 else {
 	Write-Host "`nSome tools failed to install." -ForegroundColor Yellow
