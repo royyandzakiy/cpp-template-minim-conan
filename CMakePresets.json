@@ -12,17 +12,17 @@
 			"description": "Configure using Clang compiler with Ninja generator",
 			"generator": "Ninja",
 			"cacheVariables": {
+				"CONAN_PROFILE": "clang",
 				"CMAKE_C_COMPILER": "clang",
 				"CMAKE_CXX_COMPILER": "clang++"
 			},
 			"binaryDir": "${sourceDir}/build-clang",
-			"toolchainFile": "build/Release/generators/conan_toolchain.cmake",
 			"hidden": true
 		},
 		{
 			"displayName": "clang-release",
 			"name": "clang-release",
-			"description": "Configure using Clang compiler with Ninja generator",
+			"description": "Configure using Clang compiler with Ninja generator (Release)",
 			"inherits": "clang-ninja-base",
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Release"
@@ -32,7 +32,7 @@
 		{
 			"displayName": "clang-debug",
 			"name": "clang-debug",
-			"description": "Configure using Clang compiler with Ninja generator",
+			"description": "Configure using Clang compiler with Ninja generator (Debug)",
 			"inherits": "clang-ninja-base",
 			"cacheVariables": {
 				"CMAKE_BUILD_TYPE": "Debug"
@@ -40,43 +40,143 @@
 			"toolchainFile": "build/Debug/generators/conan_toolchain.cmake"
 		},
 		{
-			"displayName": "msvc",
+			"displayName": "msvc-vs2022",
 			"name": "msvc-vs2022",
 			"description": "Configure using MSVC with Visual Studio 2022 generator",
 			"generator": "Visual Studio 17 2022",
-			"cacheVariables": {},
-			"toolset": {
-				"value": "v143",
-				"strategy": "external"
+			"cacheVariables": {
+				"CONAN_PROFILE": "msvc",
+				"CMAKE_C_COMPILER": "cl",
+				"CMAKE_CXX_COMPILER": "cl"
 			},
+			"binaryDir": "${sourceDir}/build-msvc",
+			"toolchainFile": "build/generators/conan_toolchain.cmake",
 			"architecture": {
 				"value": "x64",
 				"strategy": "external"
+			}
+		},
+		{
+			"displayName": "gcc-mingw-base",
+			"name": "gcc-mingw-base",
+			"description": "Configure using GCC with MinGW Makefiles generator",
+			"generator": "MinGW Makefiles",
+			"cacheVariables": {
+				"CONAN_PROFILE": "gcc",
+				"CMAKE_C_COMPILER": "gcc",
+				"CMAKE_CXX_COMPILER": "g++"
 			},
-			"binaryDir": "${sourceDir}/build-msvc",
-			"toolchainFile": "build/generators/conan_toolchain.cmake"
+			"binaryDir": "${sourceDir}/build-gcc",
+			"toolchainFile": "${sourceDir}/build-gcc/conan_toolchain.cmake",
+			"hidden": true
+		},
+		{
+			"displayName": "gcc-release",
+			"name": "gcc-release",
+			"description": "Configure using GCC with MinGW Makefiles generator (Release)",
+			"inherits": "gcc-mingw-base",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Release"
+			}
+		},
+		{
+			"displayName": "gcc-debug",
+			"name": "gcc-debug",
+			"description": "Configure using GCC with MinGW Makefiles generator (Debug)",
+			"inherits": "gcc-mingw-base",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug"
+			}
 		}
 	],
 	"buildPresets": [
 		{
-			"name": "clang-debug",
+			"name": "build-clang-debug",
+			"displayName": "Build Clang Debug",
 			"configurePreset": "clang-debug",
-			"configuration": "Debug"
+			"jobs": 20
 		},
 		{
-			"name": "clang-release",
+			"name": "build-clang-release",
+			"displayName": "Build Clang Release",
 			"configurePreset": "clang-release",
-			"configuration": "Release"
+			"jobs": 20
 		},
 		{
-			"name": "msvc-debug",
+			"name": "build-msvc-debug",
+			"displayName": "Build MSVC Debug",
 			"configurePreset": "msvc-vs2022",
-			"configuration": "Debug"
+			"configuration": "Debug",
+			"jobs": 20
 		},
 		{
-			"name": "msvc-release",
+			"name": "build-msvc-release",
+			"displayName": "Build MSVC Release",
 			"configurePreset": "msvc-vs2022",
-			"configuration": "Release"
+			"configuration": "Release",
+			"jobs": 20
+		},
+		{
+			"name": "build-gcc-debug",
+			"displayName": "Build GCC Debug",
+			"configurePreset": "gcc-debug",
+			"jobs": 20
+		},
+		{
+			"name": "build-gcc-release",
+			"displayName": "Build GCC Release",
+			"configurePreset": "gcc-release",
+			"jobs": 20
+		}
+	],
+	"testPresets": [
+		{
+			"name": "test-clang-debug",
+			"configurePreset": "clang-debug",
+			"configuration": "Debug",
+			"output": {
+				"outputOnFailure": true
+			}
+		},
+		{
+			"name": "test-clang-release",
+			"configurePreset": "clang-release",
+			"configuration": "Release",
+			"output": {
+				"outputOnFailure": true
+			}
+		},
+		{
+			"name": "test-msvc-debug",
+			"configurePreset": "msvc-vs2022",
+			"configuration": "Debug",
+			"output": {
+				"outputOnFailure": true
+			}
+		},
+		{
+			"name": "test-msvc-release",
+			"configurePreset": "msvc-vs2022",
+			"configuration": "Release",
+			"output": {
+				"outputOnFailure": true
+			}
+		},
+		{
+			"name": "test-gcc-debug",
+			"configurePreset": "gcc-debug",
+			"configuration": "Debug",
+			"output": {
+				"outputOnFailure": true
+			}
+		},
+		{
+			"name": "test-gcc-release",
+			"configurePreset": "gcc-release",
+			"configuration": "Release",
+			"output": {
+				"outputOnFailure": true
+			}
 		}
 	]
 }
