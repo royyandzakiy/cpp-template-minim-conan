@@ -1,3 +1,4 @@
+- fix conan-precompile
 - fix setup-windows
 - add docs generator
 - add gtest + pytest

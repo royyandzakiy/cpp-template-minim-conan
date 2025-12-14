@@ -34,7 +34,14 @@ endif()
 # =============================================================================
 # Dependencies
 # =============================================================================
-find_package(fmt REQUIRED)
+# include(FetchContent)
+# FetchContent_Declare(
+#     sml
+#     GIT_REPOSITORY https://github.com/boost-ext/sml.git
+#     GIT_TAG v1.1.6
+# )
+# FetchContent_MakeAvailable(sml)
+# find_package(fmt REQUIRED)
 
 # =============================================================================
 # Main Executable
@@ -43,4 +50,5 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
 )
 
-target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
+# target_include_directories(${PROJECT_NAME} PRIVATE ${sml_SOURCE_DIR}/include)
+# target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
